@@ -6,7 +6,8 @@ import (
 
 	"github.com/alirfanyasin/golang-starterkit/config"
 	"github.com/alirfanyasin/golang-starterkit/database"
-	"github.com/alirfanyasin/golang-starterkit/packages/post"
+	"github.com/alirfanyasin/golang-starterkit/database/migrations"
+	"github.com/alirfanyasin/golang-starterkit/database/seeders"
 	"github.com/alirfanyasin/golang-starterkit/routes"
 )
 
@@ -20,13 +21,14 @@ func main() {
 		log.Fatalf("Database connection failed: %v", err)
 	}
 
-	// 3. Run Auto Migrations
-	log.Println("Running database migrations...")
-	err = db.AutoMigrate(&post.Post{})
-	if err != nil {
+	// 3. Run Migrations & Seeders
+	if err := migrations.MigrateAll(db); err != nil {
 		log.Fatalf("Migration failed: %v", err)
 	}
-	log.Println("Database migrations completed successfully.")
+
+	if err := seeders.SeedAll(db); err != nil {
+		log.Fatalf("Seeding failed: %v", err)
+	}
 
 	// 4. Setup Routes & Run Server
 	r := routes.SetupRouter(db, cfg)

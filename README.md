@@ -13,12 +13,17 @@ Struktur folder starterkit didesain menggunakan pendekatan modular berbasis _fea
 ```text
 ├── config/              # Manajemen konfigurasi environment
 │   └── config.go        # Loader variabel .env ke struct Go
-├── database/            # Setup koneksi database & pool
-│   └── database.go      # Manajemen koneksi GORM (SQLite/Postgres/MySQL)
+├── database/            # Setup database, migrasi & seeder
+│   ├── database.go      # Manajemen koneksi GORM (SQLite/Postgres/MySQL)
+│   ├── migrations/      # Kumpulan file auto-migrasi skema database
+│   │   ├── migration.go     # Runner/Pusat migrasi
+│   │   └── post_migration.go# Registrasi model Post untuk migrasi
+│   └── seeders/         # Kumpulan file data seed awal
+│       ├── seeder.go        # Runner/Pusat seeder
+│       └── post_seeder.go   # Data seed untuk model Post
 ├── middleware/          # HTTP Middlewares global/grup
 │   ├── cors.go          # Middleware CORS (Cross-Origin Resource Sharing)
 │   └── auth.go          # Middleware Autentikasi JWT & Otorisasi Role
-├── migrations/          # File migrasi database (opsional jika manual)
 ├── packages/            # Lokasi modul domain/fitur (Modular Architecture)
 │   └── post/            # Modul fitur Blog Post (CRUD)
 │       ├── model.go      # Struktur tabel & representasi data GORM
