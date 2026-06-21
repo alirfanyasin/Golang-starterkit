@@ -1,16 +1,23 @@
 package routes
 
 import (
+	_ "github.com/alirfanyasin/golang-starterkit/docs"
 	"github.com/alirfanyasin/golang-starterkit/config"
 	"github.com/alirfanyasin/golang-starterkit/middleware"
+	"github.com/alirfanyasin/golang-starterkit/packages/auth"
 	"github.com/alirfanyasin/golang-starterkit/packages/post"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/gorm"
 )
 
 // SetupRouter registers all application routes
 func SetupRouter(db *gorm.DB, cfg *config.Config) *gin.Engine {
 	r := gin.Default()
+
+	// Swagger endpoint
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Register global middlewares
 	r.Use(middleware.CORS())
@@ -19,10 +26,13 @@ func SetupRouter(db *gorm.DB, cfg *config.Config) *gin.Engine {
 	postRepo := post.NewRepository(db)
 	postService := post.NewService(postRepo)
 	postHandler := post.NewHandler(postService)
+	authHandler := auth.NewHandler(cfg)
 
 	// API version 1 group
 	v1 := r.Group("/api/v1")
 	{
+		// Authentication endpoints
+		v1.POST("/auth/login", authHandler.Login)
 		// Blog/Post endpoints
 		posts := v1.Group("/posts")
 		{

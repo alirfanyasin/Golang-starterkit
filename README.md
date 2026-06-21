@@ -86,6 +86,20 @@ Starterkit ini dilengkapi dengan sistem keamanan bawaan di folder `middleware/au
 1. **Authentication**: Melindungi rute menggunakan `AuthMiddleware`. Header `Authorization: Bearer <JWT_TOKEN>` wajib disertakan.
 2. **Authorization**: Membatasi hak akses menggunakan role melalui `AuthorizeRoles("role_name")`.
 
+### Cara Menguji API Terproteksi lewat Swagger UI
+1. Kirim request `POST /api/v1/auth/login` menggunakan input kredensial berikut:
+   ```json
+   {
+     "username": "admin",
+     "password": "password",
+     "role": "admin"
+   }
+   ```
+2. Salin token JWT yang dihasilkan di response.
+3. Klik tombol hijau **"Authorize"** di kanan atas halaman Swagger UI.
+4. Masukkan value dengan format: `Bearer <token_jwt_anda>` (contoh: `Bearer eyJhbGciOi...`).
+5. Klik **"Authorize"**. Sekarang Anda bisa memanggil endpoint yang membutuhkan role admin.
+
 ---
 
 ## 📡 Endpoint API (Blog Post CRUD)
@@ -94,6 +108,7 @@ Endpoint berada di bawah group `/api/v1`:
 
 | Method     | Endpoint            | Proteksi / Otorisasi           | Keterangan                                  |
 | :--------- | :------------------ | :----------------------------- | :------------------------------------------ |
+| **POST**   | `/api/v1/auth/login`| Public                         | Autentikasi user & mendapatkan JWT Token    |
 | **GET**    | `/api/v1/posts`     | Public                         | Menampilkan seluruh list blog post          |
 | **GET**    | `/api/v1/posts/:id` | Public                         | Menampilkan detail blog post berdasarkan ID |
 | **POST**   | `/api/v1/posts`     | Bearer Token (Role: **admin**) | Membuat blog post baru                      |
@@ -111,3 +126,26 @@ Endpoint berada di bawah group `/api/v1`:
 ```
 
 _(Catatan: Field `slug` akan otomatis terbuat secara otomatis di level service berdasarkan `title`)_.
+
+---
+
+## 📝 Dokumentasi API (Swagger)
+
+Aplikasi ini menggunakan **Swagger** untuk dokumentasi API interaktif.
+
+### Cara Mengakses Swagger UI
+
+Setelah menjalankan server (`go run main.go`), buka browser dan akses alamat berikut:
+**`http://localhost:8080/swagger/index.html`**
+
+### Cara Memperbarui Dokumentasi API
+
+Setiap kali Anda membuat atau memperbarui anotasi Swagger pada handler, jalankan perintah ini di root folder untuk men-generate ulang dokumentasi:
+
+```bash
+# Pastikan tool swag sudah terinstall (go install github.com/swaggo/swag/cmd/swag@latest)
+# Jalankan perintah ini di root project:
+swag init
+```
+
+File dokumentasi baru akan dibuat secara otomatis di dalam folder `/docs` dan langsung siap disajikan saat server dijalankan.
